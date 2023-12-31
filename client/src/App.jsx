@@ -6,6 +6,7 @@ import Profile from "./Pages/Profile"
 import Signin from "./Pages/Signin"
 import Signout from "./Pages/Signout"
 import Header from './Components/Header'
+import Signup from './Pages/Signup'
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       <Route path='/signout' element={<Signout/>}/>
       <Route path='/profile' element={<Profile/>}/>
       <Route path='/about' element={<About/>}/>
+      <Route path='/signup' element={<Signup/>}/>
       
     </Routes>
     </BrowserRouter>

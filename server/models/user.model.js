@@ -3,7 +3,7 @@ const userschema=new mongoose.Schema({
     username:{
         type:String,
         required:true,
-        unique:true
+       // unique:true
     },
     email:{
         type:String,
@@ -15,6 +15,10 @@ const userschema=new mongoose.Schema({
         required:true
         
     },
+    image:{
+        type:String,
+        default:"https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg"
+    }
    
     
 },{timestamps:true})
