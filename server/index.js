@@ -3,6 +3,8 @@ import dotenv from "dotenv"
 import mongoose from "mongoose";
 import userrouter from "./routes/user.route.js";
 import cors from "cors";
+import cookieparser from "cookie-parser";
+import listrouter from "./routes/listing.route.js";
 const app=express();
 dotenv.config();
 app.use(cors({
@@ -18,7 +20,9 @@ mongoose.connect(process.env.MONGODB).then(()=>{
     console.log("error in connecting to database");
 })
 app.use(express.json());
+app.use(cookieparser());
 app.use('/api/user',userrouter);
+app.use('/api/list',listrouter);
 app.use((err, req, res, next) => {
    // res.json({message:"something went wrong"})
     
