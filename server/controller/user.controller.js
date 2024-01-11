@@ -1,6 +1,7 @@
 import User from "../models/user.model.js"
 import errorHandler from "../utils/handleerror.js"
 import jwt from "jsonwebtoken";
+import upload from "../utils/multer.js"
 export const signup=async(req,res,next)=>{
     try{
         const data=req.body;
@@ -83,6 +84,7 @@ export const signup=async(req,res,next)=>{
 
     }
     export const updateuser=async (req,res,next)=>{
+      //console.log(req.body);
        //console.log(req.user._id);
        //console.log(req.body);
       //console.log(req.params.id);
@@ -91,7 +93,7 @@ export const signup=async(req,res,next)=>{
         return next(errorHandler(401, 'You can only update your own account!'));
       try {
         
-    
+    //console.log(req.body);
         const updatedUser = await User.findByIdAndUpdate(
           req.params.id,
           {
@@ -99,7 +101,7 @@ export const signup=async(req,res,next)=>{
               username: req.body.username,
               email: req.body.email,
               password: req.body.password,
-              image: req.body.avatar,
+              image: req.body.image,
             },
           },
           // new:true that is only mean for returning the updated value
@@ -139,5 +141,28 @@ export const signup=async(req,res,next)=>{
       next(error);
     }
   };
+  export const photo=async(req,res)=>{
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+        $set: {
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password,
+          image:`http://localhost:5000/${req.file.filename}`
+        }
+         
+        },
+        { new: true }
+        
+      );
+  
+      res.json({ success: true, message: 'File uploaded successfully', user: updatedUser });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  }
 
 

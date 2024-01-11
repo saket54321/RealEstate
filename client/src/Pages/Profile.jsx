@@ -1,6 +1,7 @@
 import {useEffect, useRef,useState} from 'react'
 import {useDispatch,useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom"
+import {useNavigate,Link} from "react-router-dom"
+
 //import navigate
 //import { useDispatch,useSelector } from 'react-redux';
 import axios from "axios";
@@ -20,10 +21,11 @@ function Profile() {
   const[updateSuccess,setUpdateSuccess]=useState(false);
   const fileRef=useRef();
   const {currentUser,loading,error} =useSelector((state)=>state.user);
-  //console.log(currentUser);
+  //console.log(currentUser.image);
   const [file,setFile]=useState();
   const [formData,setFormData]=useState();
-  //console.log(file);
+  const [selectedFile, setSelectedFile] = useState(null);
+  //console.log(formData);
   const dispatch=useDispatch();
   // useEffect(()=>{
   //   console.log("useeffect");
@@ -31,6 +33,13 @@ function Profile() {
   //     navigate('/signin');
   //   }
   // },[])
+  const handleFileChange = (event) => {
+    //console.log("hi");
+    setSelectedFile(event.target.files[0]);
+   // console.log(selectedFile)
+    
+  };
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -42,13 +51,20 @@ function Profile() {
     try {
       dispatch(updateUserStart());
       //console.log(currentUser._id);
+      const formDatas = new FormData();
+      //console.log(selectedFile);
+      formDatas.append('image', selectedFile);
+      
+      //console.log(formDatas);
+      await axios.post('http://localhost:5000/api/user/upload', formDatas,{ withCredentials: true,
+    })
       const data=await axios.put(`http://localhost:5000/api/user/updateuser/${currentUser._id}`,formData,{
         withCredentials: true,
       });
       console.log(data);
       if (data.data.success === false) {
         setUpdateSuccess(false);
-        console.log(updateSuccess);
+        //console.log(updateSuccess);
         dispatch(updateUserFailure(data.message));
         return;
       }
@@ -102,7 +118,8 @@ function Profile() {
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
-          onChange={(e) => setFile(e.target.files[0])}
+           onChange={handleFileChange}
+          
           type="file"
           ref={fileRef}
           hidden
@@ -110,7 +127,8 @@ function Profile() {
         />
         <img
           onClick={() => fileRef.current.click()}
-          src={currentUser?currentUser.image:"https://t4.ftcdn.net/jpg/01/61/82/97/360_F_161829780_LFy5BlQ4Mg94Ql1ywUyPTMTnVeZABsfN.jpg"}
+          src={currentUser.image}
+          
           alt="profile"
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
@@ -143,6 +161,12 @@ function Profile() {
         >
           {loading ? "Loading..." : "Update"}
         </button>
+        <Link
+          className='bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95'
+          to={'/createlisting'}
+        >
+          Create Listing
+        </Link>
       </form>
       <div className="flex justify-between mt-5">
         <span
@@ -159,6 +183,7 @@ function Profile() {
       <p className="text-green-700 mt-5">
         {updateSuccess ? "User is updated successfully!" : ""}
       </p>
+      
     </div>
   );
 }
