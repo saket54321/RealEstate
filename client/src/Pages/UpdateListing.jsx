@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useParams  } from 'react-router-dom';
 import axios from 'axios';
 
-export default function CreateListing() {
+export default function UpdateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const params=useParams();
   
   const [formData, setFormData] = useState({
     imageUrls: [],
@@ -34,16 +35,24 @@ export default function CreateListing() {
  //console.log(files);
  useEffect(() => {
   const getimage = async () => {
+    const listingId = params.listingId;
+    console.log(listingId);
     try {
-      const response = await axios.get('http://localhost:5000/api/list/getphoto', { withCredentials: true });
-      const imageUrls = response.data.list[0].imageUrls;
+      const response = await axios.get(`http://localhost:5000/api/list/getlist/${listingId}`, { withCredentials: true });
+      //const imageUrls = response.data.list[0].imageUrls;
       //console.log(response.data.list[0].imageUrls);
-     // console.log(imageUrls)
+      console.log(response.data);
+      if (response.data.success === false) {
+        console.log(response.data.message);
+        return;
+      }
+      setFormData(response.data);
+    
 
       // Use the functional update form to access the previous state
-      setIamg(imageUrls);
+      //setIamg(imageUrls);
       // const a=["cat"];
-      // setIamg(a);
+       setIamg(response.data.imageUrls);
 
       // Use a callback in the useEffect to log the updated state
       //console.log(imag);
@@ -55,10 +64,10 @@ export default function CreateListing() {
   // Call the getimage function inside the useEffect
   getimage();
   //console.log(imag);
-}, [imag]); 
+}, []); 
  const handleRemoveImage=async(index)=>{
   try{
-    const response=await axios.put('http://localhost:5000/api/list/updatephoto',{imageurl:index}, { withCredentials: true });
+    const response=await axios.put(`http://localhost:5000/api/list/updatephoto/${params.listingId}`,{imageurl:index}, { withCredentials: true });
 
   }
   catch(error){
@@ -95,6 +104,7 @@ export default function CreateListing() {
 
  const handlesubmit=async(e)=>{
   e.preventDefault();
+  const listingId = params.listingId;
   //console.log("hi");
   try{
    
@@ -119,7 +129,7 @@ export default function CreateListing() {
     formDatas.append('list',JSON.stringify({...formData,userRef:currentUser._id}))
     
     //console.log(formData);
-    const data=await axios.post('http://localhost:5000/api/list/photo', formDatas,{ withCredentials: true,});
+    const data=await axios.post(`http://localhost:5000/api/list/update/${listingId}`, formDatas,{ withCredentials: true,});
     console.log(data);
       
       // const data=await axios.post('http://localhost:5000/api/list/createlist',{...formData,userRef:currentUser._id},{ withCredentials: true})
@@ -178,7 +188,7 @@ export default function CreateListing() {
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>
-        Create a Listing
+        Update Listing
       </h1>
       <form onSubmit={handlesubmit} className='flex flex-col sm:flex-row gap-4'>
         <div className='flex flex-col gap-4 flex-1'>
@@ -273,6 +283,8 @@ export default function CreateListing() {
                 required
                 className='p-3 border border-gray-300 rounded-lg'
                 onChange={handleChange}
+                value={formData.bedrooms}
+
                 
               />
               <p>Beds</p>
@@ -286,6 +298,8 @@ export default function CreateListing() {
                 required
                 className='p-3 border border-gray-300 rounded-lg'
                 onChange={handleChange}
+                value={formData.bathrooms}
+
                 
               />
               <p>Baths</p>
@@ -299,6 +313,8 @@ export default function CreateListing() {
                 required
                 className='p-3 border border-gray-300 rounded-lg'
                 onChange={handleChange}
+                value={formData.regularPrice}
+
                 
               />
               <div className='flex flex-col items-center'>
@@ -392,7 +408,7 @@ export default function CreateListing() {
             disabled={loading || uploading}
             className='p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
           >
-            {loading ? 'Creating...' : 'Create listing'}
+            {loading ? 'Updating...' : 'Update listing'}
           </button>
           {error && <p className='text-red-700 text-sm'>{error}</p>}
         </div>
