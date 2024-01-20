@@ -8,7 +8,10 @@ import listrouter from "./routes/listing.route.js";
 import multer from "multer";
 import checkUser from "./utils/verifytoken.js";
 import User from "./models/user.model.js"
+import path from 'path';
+const __dirname = path.resolve();
 const app=express();
+
 dotenv.config();
 app.use(cors({
     origin:["http://localhost:5173"],
@@ -25,6 +28,12 @@ mongoose.connect(process.env.MONGODB).then(()=>{
 app.use(express.json());
 app.use(cookieparser());
 app.use( express.static('server/upload/images'));
+app.use(express.static(path.join(__dirname, '/client/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+})
+
 
 // const storage = multer.diskStorage({
   

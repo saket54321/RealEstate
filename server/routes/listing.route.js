@@ -1,6 +1,6 @@
 import express from "express"
 import checkUser from "../utils/verifytoken.js";
-import { photo,getphoto,updatephoto,getListing,deleteListing,updateListing,getList } from "../controller/listing.controller.js";
+import { photo,getphoto,updatephoto,getListing,deleteListing,updateListing,getList,getListings } from "../controller/listing.controller.js";
 import  upload from "../utils/multer.js"
 
 const listrouter=express.Router();
@@ -13,6 +13,8 @@ listrouter.get('/getlist/:id',checkUser,getList);
 
 listrouter.delete('/delete/:id',checkUser,deleteListing);
 listrouter.post('/update/:id',checkUser,upload.array('image',6),updateListing);
+listrouter.get('/listing',getListings);
+
 
 
 

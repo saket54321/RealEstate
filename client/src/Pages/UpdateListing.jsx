@@ -65,6 +65,18 @@ export default function UpdateListing() {
   getimage();
   //console.log(imag);
 }, []); 
+//  const upload=async()=>{
+//   const formDatas = new FormData();
+//   //const formDatas = new FormData();
+//   //console.log(files);
+//   formDatas.append('image', file);
+//   //console.log(formDatas);
+  
+//   //console.log(formData);
+//   const data=await axios.post('http://localhost:5000/api/list/photo', formDatas,{ withCredentials: true,});
+//   //console.log(data.data.user);
+
+//  }
  const handleRemoveImage=async(index)=>{
   try{
     const response=await axios.put(`http://localhost:5000/api/list/updatephoto/${params.listingId}`,{imageurl:index}, { withCredentials: true });
@@ -365,15 +377,7 @@ export default function UpdateListing() {
               accept='image/*'
               multiple
             />
-            <button
-              type='button'
-              disabled={uploading}
-              
-             
-              className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'
-            >
-              {uploading ? 'Uploading...' : 'Upload'}
-            </button>
+            
           </div>
           <p className='text-red-700 text-sm'>
             

@@ -41,7 +41,8 @@ export const signup=async(req,res,next)=>{
         const {password,...rest}=user._doc;
         console.log(rest);
         res
-        .cookie('access_token', token, { httpOnly: true }).json(rest);
+        .cookie('access_token', token, { withCredentials: true,
+          httpOnly: false }).json(rest);
 
         }
         catch(error){
@@ -62,7 +63,8 @@ export const signup=async(req,res,next)=>{
         const {password,...rest}=user._doc;
         //console.log(rest);
         res
-        .cookie('access_token', token, { httpOnly: true }).json(rest);
+        .cookie('access_token', token, { withCredentials: true,
+          httpOnly: false}).json(rest);
 
             
         }
@@ -73,7 +75,8 @@ export const signup=async(req,res,next)=>{
         const {password,...rest}=user._doc;
         //console.log(rest);
         res
-        .cookie('access_token', token, { httpOnly: true }).json(rest);
+        .cookie('access_token', token, {withCredentials: true,
+          httpOnly: false }).json(rest);
         }
 
         }
@@ -164,5 +167,18 @@ export const signup=async(req,res,next)=>{
       res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
   }
-
+  export const getUser = async (req, res, next) => {
+    try {
+      
+      const user = await User.findById(req.params.id);
+    
+      if (!user) return next(errorHandler(404, 'User not found!'));
+    
+      const { password: pass, ...rest } = user._doc;
+    
+      res.status(200).json(rest);
+    } catch (error) {
+      next(error);
+    }
+  };
 

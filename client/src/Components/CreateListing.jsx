@@ -32,30 +32,30 @@ export default function CreateListing() {
   
   //console.log(formData);
  //console.log(files);
- useEffect(() => {
-  const getimage = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/list/getphoto', { withCredentials: true });
-      const imageUrls = response.data.list[0].imageUrls;
-      //console.log(response.data.list[0].imageUrls);
-     // console.log(imageUrls)
+//  useEffect(() => {
+//   const getimage = async () => {
+//     try {
+//       const response = await axios.get('http://localhost:5000/api/list/getphoto', { withCredentials: true });
+//       const imageUrls = response.data.list[0].imageUrls;
+//       //console.log(response.data.list[0].imageUrls);
+//      // console.log(imageUrls)
 
-      // Use the functional update form to access the previous state
-      setIamg(imageUrls);
-      // const a=["cat"];
-      // setIamg(a);
+//       // Use the functional update form to access the previous state
+//       setIamg(imageUrls);
+//       // const a=["cat"];
+//       // setIamg(a);
 
-      // Use a callback in the useEffect to log the updated state
-      //console.log(imag);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+//       // Use a callback in the useEffect to log the updated state
+//       //console.log(imag);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
 
-  // Call the getimage function inside the useEffect
-  getimage();
-  //console.log(imag);
-}, [imag]); 
+//   // Call the getimage function inside the useEffect
+//   getimage();
+//   //console.log(imag);
+// }, [imag]); 
  const handleRemoveImage=async(index)=>{
   try{
     const response=await axios.put('http://localhost:5000/api/list/updatephoto',{imageurl:index}, { withCredentials: true });
@@ -96,7 +96,12 @@ export default function CreateListing() {
  const handlesubmit=async(e)=>{
   e.preventDefault();
   //console.log("hi");
+
   try{
+    if (file.length < 1)
+    return setError('You must upload at least one image');
+    if (+formData.regularPrice < +formData.discountPrice)
+    return setError('Discount price must be lower than regular price');
    
     const formDatas = new FormData();
     
@@ -119,15 +124,23 @@ export default function CreateListing() {
     formDatas.append('list',JSON.stringify({...formData,userRef:currentUser._id}))
     
     //console.log(formData);
-    const data=await axios.post('http://localhost:5000/api/list/photo', formDatas,{ withCredentials: true,});
-    console.log(data);
+    const res=await axios.post('http://localhost:5000/api/list/photo', formDatas,{ withCredentials: true,});
+    //console.log(data);
+    const data =  res.data;
+    
+    if (data.success === false) {
+      setError(data.message);
+    }
+    navigate(`/listing/${data._id}`);
+
       
       // const data=await axios.post('http://localhost:5000/api/list/createlist',{...formData,userRef:currentUser._id},{ withCredentials: true})
       // console.log(data);
   }
 
   catch(error){
-    console.log(error);
+    setError(error.message);
+      setLoading(false);
 
   }
  }
@@ -349,15 +362,7 @@ export default function CreateListing() {
               accept='image/*'
               multiple
             />
-            <button
-              type='button'
-              disabled={uploading}
-              
-             
-              className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'
-            >
-              {uploading ? 'Uploading...' : 'Upload'}
-            </button>
+            
           </div>
           <p className='text-red-700 text-sm'>
             

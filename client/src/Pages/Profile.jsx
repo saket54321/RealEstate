@@ -1,6 +1,8 @@
 import {useEffect, useRef,useState} from 'react'
 import {useDispatch,useSelector} from "react-redux";
 import {useNavigate,Link} from "react-router-dom"
+import { useCookies } from "react-cookie";
+
 
 //import navigate
 //import { useDispatch,useSelector } from 'react-redux';
@@ -18,10 +20,12 @@ import {
 
 function Profile() {
   const navigate=useNavigate();
+  const [cookies] = useCookies([]);
+
   const[updateSuccess,setUpdateSuccess]=useState(false);
   const fileRef=useRef();
   const {currentUser,loading,error} =useSelector((state)=>state.user);
-  //console.log(currentUser.image);
+  //console.log(currentUser);
   const [file,setFile]=useState();
   const [formData,setFormData]=useState();
   const [selectedFile, setSelectedFile] = useState(null);
@@ -35,6 +39,13 @@ function Profile() {
   //     navigate('/signin');
   //   }
   // },[])
+  // useEffect(() => {
+  //   //console.log(cookies);
+  //   if (cookies.access_token) {
+  //     //console.log("suman")
+  //     navigate("/");
+  //   }
+  // }, [navigate]);
   const handleFileChange = (event) => {
     //console.log("hi");
     setSelectedFile(event.target.files[0]);
@@ -103,7 +114,7 @@ function Profile() {
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
-      const data = await axios.get('http://localhost:5000/api/user/signout');
+      const data = await axios.get('http://localhost:5000/api/user/signout',{withCredentials:true});
       
       if (data.data.success === false) {
         dispatch(deleteUserFailure(data.data.message));
@@ -180,6 +191,7 @@ function Profile() {
           placeholder="email"
           id="email"
           defaultValue={currentUser.email}
+          value={currentUser.email}
           className="border p-3 rounded-lg"
           onChange={handleChange}
         />

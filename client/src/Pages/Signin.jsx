@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { useDispatch, useSelector } from 'react-redux';
 import Oauth from '../Components/Oauth.jsx';
+import { useCookies } from "react-cookie";
 import {
   signInStart,
   signInSuccess,
@@ -10,8 +11,11 @@ import {
 } from '../redux/user/UserSlice.js';
 
 function Signin() {
+  
   const dispatch=useDispatch();
   const navigate=useNavigate();
+  
+  const [cookies] = useCookies([]);
   const [formdata,setformdata]=useState({});
   // const [loading,setLoading]=useState(false);
   // const [error,setError]=useState();
@@ -21,6 +25,29 @@ function Signin() {
     //console.log(formdata);
 
   }
+  // function getCookie(cookieName) {
+  //   const name = cookieName + "=";
+  //   const decodedCookie = decodeURIComponent(document.cookie);
+  //   console.log(decodedCookie);
+  //   const cookieArray = decodedCookie.split(';');
+  
+  //   for (let i = 0; i < cookieArray.length; i++) {
+  //     let cookie = cookieArray[i].trim();
+  //     if (cookie.indexOf(name) === 0) {
+  //       return cookie.substring(name.length, cookie.length);
+  //     }
+  //   }
+  
+  //   return null; // Return null if the cookie is not found
+  // }
+  
+  useEffect(() => {
+    //console.log(cookies);
+    if (cookies.access_token) {
+      //console.log("suman")
+      navigate("/");
+    }
+  }, [navigate]);
   const handlesubmit=async (e)=>{
     e.preventDefault();
     try{
@@ -34,7 +61,7 @@ function Signin() {
         dispatch(signInFailure(data.data.message));
         return;
       }
-      dispatch(signInSuccess(data));
+      dispatch(signInSuccess(data.data));
       //setLoading(false);
       //setError(null);
       navigate('/profile');
@@ -49,7 +76,7 @@ function Signin() {
   }
   return (
     <div className='p-3 max-w-lg mx-auto'>
-    <h1 className='text-3xl text-center font-semibold my-7'>Sign Up</h1>
+    <h1 className='text-3xl text-center font-semibold my-7'>Sign In</h1>
     <form onSubmit={handlesubmit} className='flex flex-col gap-4'>
       
       <input
